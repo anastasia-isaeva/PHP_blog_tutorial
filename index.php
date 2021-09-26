@@ -1,10 +1,7 @@
 <?php
-// Work out the path to the database, so SQLite/PDO can connect
-$root = __DIR__;
-$database = $root . '/data/data.sqlite';
-$dsn = 'sqlite:' . $database;
+require_once 'lib/common.php';
 // Connect to the database, run a query, handle errors
-$pdo = new PDO($dsn);
+$pdo = getPDO();
 $stmt = $pdo->query(
     'SELECT
        id, title, created_at, body
@@ -25,8 +22,7 @@ if ($stmt === false)
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 </head>
 <body>
-    <h1>Blog title</h1>
-    <p>This paragraph summarises what the blog is about.</p>
+    <?php require 'templates/title.php' ?>
     <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
     <h2>
         <?php echo htmlspecialchars($row['title'], ENT_HTML5, 'UTF-8') ?>
