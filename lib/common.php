@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Gets the root path of the project
  *
@@ -8,6 +9,7 @@ function getRootPath()
 {
     return realpath(__DIR__ . '/..');
 }
+
 /**
  * Gets the full path for the database file
  *
@@ -17,6 +19,7 @@ function getDatabasePath()
 {
     return getRootPath() . '/data/data.sqlite';
 }
+
 /**
  * Gets the DSN for the SQLite connection
  *
@@ -26,6 +29,7 @@ function getDsn()
 {
     return 'sqlite:' . getDatabasePath();
 }
+
 /**
  * Gets the PDO object for database access
  *
@@ -47,12 +51,30 @@ function htmlEscape($html)
     return htmlspecialchars($html, ENT_HTML5, 'UTF-8');
 }
 
-
 function convertSqlDate($sqlDate)
 {
     /* @var $date DateTime */
-    $date = DateTime::createFromFormat('Y-m-d', $sqlDate);
-    return $date->format('d M Y,H:i');
+    $date = DateTime::createFromFormat('Y-m-d H:i:s', $sqlDate);
+
+    return $date->format('d M Y, H:i');
+}
+
+function getSqlDateForNow()
+{
+    return date('Y-m-d H:i:s');
+}
+
+/**
+ * Converts unsafe text to safe, paragraphed, HTML
+ *
+ * @param string $text
+ * @return string
+ */
+function convertNewlinesToParagraphs($text)
+{
+    $escaped = htmlEscape($text);
+
+    return '<p>' . str_replace("\n", "</p><p>", $escaped) . '</p>';
 }
 
 function redirectAndExit($script)
@@ -61,6 +83,7 @@ function redirectAndExit($script)
     // out the folder (e.g. /blog/ or /).
     $relativeUrl = $_SERVER['PHP_SELF'];
     $urlFolder = substr($relativeUrl, 0, strrpos($relativeUrl, '/') + 1);
+
     // Redirect to the full URL (http://myhost/blog/script.php)
     $host = $_SERVER['HTTP_HOST'];
     $fullUrl = 'http://' . $host . $urlFolder . $script;
@@ -89,6 +112,7 @@ function countCommentsForPost($postId)
     $stmt->execute(
         array('post_id' => $postId, )
     );
+
     return (int) $stmt->fetchColumn();
 }
 
@@ -112,6 +136,6 @@ function getCommentsForPost($postId)
     $stmt->execute(
         array('post_id' => $postId, )
     );
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
