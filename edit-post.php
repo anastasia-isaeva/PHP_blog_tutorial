@@ -1,6 +1,7 @@
 <?php
 require_once 'lib/common.php';
 require_once 'lib/edit-post.php';
+require_once 'lib/view-post.php';
 
 session_start();
 
@@ -8,6 +9,24 @@ session_start();
 if (!isLoggedIn())
 {
     redirectAndExit('index.php');
+}
+
+// Empty defaults
+$title = $body = '';
+
+// Init database and get handle
+$pdo = getPDO();
+
+$postId = null;
+if (isset($_GET['post_id']))
+{
+    $post = getPostRow($pdo, $_GET['post_id']);
+    if ($post)
+    {
+        $postId = $_GET['post_id'];
+        $title = $post['title'];
+        $body = $post['body'];
+    }
 }
 
 // Handle the post operation here
@@ -29,17 +48,20 @@ if ($_POST)
     if (!$errors)
     {
         $pdo = getPDO();
-        $userId = getAuthUserId($pdo);
-        $postId = addPost(
-            getPDO(),
-            $title,
-            $body,
-            $userId
-        );
-
-        if ($postId === false)
+        // Decide if we are editing or adding
+        if ($postId)
         {
-            $errors[] = 'Post operation failed';
+            editPost($pdo, $title, $body, $postId);
+        }
+        else
+        {
+            $userId = getAuthUserId($pdo);
+            $postId = addPost($pdo, $title, $body, $userId);
+
+            if ($postId === false)
+            {
+                $errors[] = 'Post operation failed';
+            }
         }
     }
 
@@ -76,6 +98,7 @@ if ($_POST)
                 id="post-title"
                 name="post-title"
                 type="text"
+                value="<?php echo htmlEscape($title) ?>"
         />
     </div>
     <div>
@@ -85,7 +108,7 @@ if ($_POST)
                 name="post-body"
                 rows="12"
                 cols="70"
-        ></textarea>
+        ><?php echo htmlEscape($body) ?></textarea>
     </div>
     <div>
         <input
