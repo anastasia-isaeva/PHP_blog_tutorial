@@ -74,7 +74,7 @@ function installBlog(PDO $pdo)
 }
 
 /**
- * Creates a new user in the database
+ * Updates the admin user in the database
  *
  * @param PDO $pdo
  * @param string $username
@@ -86,26 +86,29 @@ function createUser(PDO $pdo, $username, $length = 10)
     // This algorithm creates a random password
     $alphabet = range(ord('A'), ord('z'));
     $alphabetLength = count($alphabet);
+
     $password = '';
     for($i = 0; $i < $length; $i++)
     {
         $letterCode = $alphabet[rand(0, $alphabetLength - 1)];
         $password .= chr($letterCode);
     }
+
     $error = '';
+
     // Insert the credentials into the database
     $sql = "
-        INSERT INTO
+        UPDATE
             user
-            (username, password, created_at)
-            VALUES (
-                :username, :password, :created_at
-            )
+        SET
+            password = :password, created_at = :created_at, is_enabled = 1
+        WHERE
+            username = :username
     ";
     $stmt = $pdo->prepare($sql);
     if ($stmt === false)
     {
-        $error = 'Could not prepare the user creation';
+        $error = 'Could not prepare the user update';
     }
 
     if (!$error)
@@ -117,26 +120,27 @@ function createUser(PDO $pdo, $username, $length = 10)
             $error = 'Password hashing failed';
         }
     }
+
     // Insert user details, including hashed password
-
-
     if (!$error)
     {
         $result = $stmt->execute(
             array(
                 'username' => $username,
-                'password' => $password,
+                'password' => $hash,
                 'created_at' => getSqlDateForNow(),
             )
         );
         if ($result === false)
         {
-            $error = 'Could not run the user creation';
+            $error = 'Could not run the user password update';
         }
     }
+
     if ($error)
     {
         $password = '';
     }
+
     return array($password, $error);
 }
