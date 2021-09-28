@@ -2,7 +2,7 @@
 require_once 'lib/common.php';
 require_once 'lib/install.php';
 
-// We store stuff in the session, to survive the redirect to self
+// Store stuff in the session, to survive the redirect to self
 session_start();
 
 // Only run the installer when we're responding to the form
@@ -81,17 +81,13 @@ if (isset($_SESSION['try-install']))
             <span class="install-password"><?php echo htmlEscape($password) ?></span>
             (copy it to clipboard if you wish).
         </div>
-
         <p>
             <a href="index.php">View the blog</a>,
             or <a href="install.php">install again</a>.
         </p>
     <?php endif ?>
-
 <?php else: ?>
-
     <p>Click the install button to reset the database.</p>
-
     <form method="post">
         <input
                 name="install"
@@ -99,7 +95,6 @@ if (isset($_SESSION['try-install']))
                 value="Install"
         />
     </form>
-
 <?php endif ?>
 </body>
 </html>

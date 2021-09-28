@@ -18,41 +18,41 @@ $title = $body = '';
 $pdo = getPDO();
 
 $postId = null;
-if (isset($_GET['post_id']))
-{
-    $post = getPostRow($pdo, $_GET['post_id']);
-    if ($post)
+    if (isset($_GET['post_id']))
     {
-        $postId = $_GET['post_id'];
-        $title = $post['title'];
-        $body = $post['body'];
+        $post = getPostRow($pdo, $_GET['post_id']);
+        if ($post)
+        {
+            $postId = $_GET['post_id'];
+            $title = $post['title'];
+            $body = $post['body'];
+        }
     }
-}
 
 // Handle the post operation here
 $errors = array();
-if ($_POST)
-{
-    // Validate these first
-    $title = $_POST['post-title'];
-    if (!$title)
+    if ($_POST)
     {
-        $errors[] = 'The post must have a title';
-    }
-    $body = $_POST['post-body'];
-    if (!$body)
-    {
-        $errors[] = 'The post must have a body';
-    }
-
-    if (!$errors)
-    {
-        $pdo = getPDO();
-        // Decide if we are editing or adding
-        if ($postId)
+        // Validate these first
+        $title = $_POST['post-title'];
+        if (!$title)
         {
-            editPost($pdo, $title, $body, $postId);
+            $errors[] = 'The post must have a title';
         }
+        $body = $_POST['post-body'];
+        if (!$body)
+        {
+            $errors[] = 'The post must have a body';
+        }
+
+        if (!$errors)
+        {
+            $pdo = getPDO();
+            // Decide if we are editing or adding
+            if ($postId)
+            {
+                editPost($pdo, $title, $body, $postId);
+            }
         else
         {
             $userId = getAuthUserId($pdo);
@@ -64,12 +64,11 @@ if ($_POST)
             }
         }
     }
-
-    if (!$errors)
-    {
-        redirectAndExit('edit-post.php?post_id=' . $postId);
+        if (!$errors)
+        {
+            redirectAndExit('edit-post.php?post_id=' . $postId);
+        }
     }
-}
 
 ?>
 <!DOCTYPE html>
@@ -79,15 +78,12 @@ if ($_POST)
     <?php require 'templates/head.php' ?>
 </head>
 <body>
-
 <?php require 'templates/top-menu.php' ?>
 <?php if (isset($_GET['post_id'])): ?>
     <h1>Edit post</h1>
 <?php else: ?>
     <h1>New post</h1>
 <?php endif ?>
-
-
 
 <?php if ($errors): ?>
     <div class="error box">

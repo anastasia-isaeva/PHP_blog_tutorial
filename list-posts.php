@@ -38,32 +38,41 @@ $posts = getAllPosts($pdo);
 </head>
 <body>
 <?php require 'templates/top-menu.php' ?>
-
-<h1>Post list</h1>
-<p>You have <?php echo count($posts) ?> posts.
-
-<form method="post">
-    <table id="post-list">
-        <tbody>
-        <?php foreach ($posts as $post): ?>
-            <tr>
-                <td>
-                    <?php echo htmlEscape($post['title']) ?>
-                </td>
-                <td>
-                    <?php echo convertSqlDate($post['created_at']) ?>
-                </td>
-                <td>
-                    <a href="edit-post.php?post_id=<?php echo $post['id']?>">Edit</a>
-                </td>
-                <td>
-                    <input
-                            type="submit"
-                            name="delete-post[<?php echo $post['id']?>]"
-                            value="Delete"
-                    />
-                </td>
-            </tr>
+    <h1>Post list</h1>
+    <p>You have <?php echo count($posts) ?> posts.
+    <form method="post">
+        <table id="post-list">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Creation date</th>
+                    <th>Comments</th>
+                    <th />
+                    <th />
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($posts as $post): ?>
+                <tr>
+                    <td>
+                        <?php echo htmlEscape($post['title']) ?>
+                    </td>
+                    <td>
+                        <a href="view-post.php?post_id=<?php echo $post['id']?>"><?php echo htmlEscape($post['title']) ?></a>
+                    </td>
+                    <td>
+                        <?php echo $post['comment_count'] ?>
+                    </td>
+                    <td>
+                        <a href="edit-post.php?post_id=<?php echo $post['id']?>">Edit</a>
+                    </td>
+                    <td>
+                        <input
+                                type="submit"
+                                name="delete-post[<?php echo $post['id']?>]"
+                                value="Delete"/>
+                    </td>
+                </tr>
         <?php endforeach ?>
         </tbody>
     </table>

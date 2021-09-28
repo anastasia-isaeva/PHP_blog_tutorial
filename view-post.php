@@ -11,13 +11,14 @@ if (isset($_GET['post_id']))
 }
 else
 {
-    // So we always have a post ID var defined
+    // Always have a post ID var defined
     $postId = 0;
 }
 
 // Connect to the database, run a query, handle errors
 $pdo = getPDO();
 $row = getPostRow($pdo, $postId);
+$commentCount = $row['comment_count'];
 
 // If the post does not exist, let's deal with that here
 if (!$row)
@@ -44,7 +45,6 @@ if ($_POST)
             break;
     }
 }
-
 else
 {
     $commentData = array(
@@ -79,7 +79,7 @@ else
 </div>
 
 <?php require 'templates/list-comments.php' ?>
-<?php // We use $commentData in this HTML fragment ?>
+<?php // Use $commentData in this HTML fragment ?>
 <?php require 'templates/comment-form.php' ?>
 </body>
 </html>
